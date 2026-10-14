@@ -1,0 +1,77 @@
+---
+/**
+ * The pot-size setting, shown in the menu beside Full / Mini: a pill that
+ * drops down a short list of common gongfu sizes. Built from <details> and
+ * radios rather than a <select>, so the list can match the site.
+ *
+ * The choice is remembered site-wide; the page's `[data-pot]` elements show
+ * it, and each `[data-leaf]` shows the leaf for it at its `data-ratio`.
+ */
+import { DEFAULT_POT_ML, POT_SIZES } from "../lib/infusion";
+---
+
+<div class="pot">
+  <span class="pot-label" aria-hidden="true">Pot</span>
+  <details class="pot-picker" data-pot-picker>
+    <summary aria-label="Pot size">
+      <span data-pot-current>{DEFAULT_POT_ML}&nbsp;ml</span>
+    </summary>
+    <fieldset class="pot-list">
+      <legend class="sr-only">Pot size</legend>
+      {
+        POT_SIZES.map((ml) => (
+          <label>
+            <input type="radio" name="pot" value={ml} checked={ml === DEFAULT_POT_ML} />
+            <span>{ml}&nbsp;ml</span>
+          </label>
+        ))
+      }
+    </fieldset>
+  </details>
+</div>
+
+<script>
+  import { DEFAULT_POT_ML, POT_SIZES, leaf } from "../lib/infusion";
+  import { load, save } from "../lib/store";
+
+  const picker = document.querySelector<HTMLDetailsElement>("[data-pot-picker]")!;
+  const current = picker.querySelector<HTMLElement>("[data-pot-current]")!;
+  const radios = [...picker.querySelectorAll<HTMLInputElement>("input")];
+  const close = (): void => void (picker.open = false);
+
+  function apply(ml: number): void {
+    const text = `${ml} ml`;
+    for (const radio of radios) radio.checked = Number(radio.value) === ml;
+    current.textContent = text;
+    for (const el of document.querySelectorAll<HTMLElement>("[data-pot]")) {
+      el.textContent = text;
+    }
+    for (const el of document.querySelectorAll<HTMLElement>("[data-leaf]")) {
+      el.textContent = leaf(ml, Number(el.dataset.ratio));
+    }
+  }
+
+  const saved = load<number>("pot-ml");
+  if (saved && saved !== DEFAULT_POT_ML && POT_SIZES.includes(saved)) apply(saved);
+
+  picker.addEventListener("change", (e) => {
+    const ml = Number((e.target as HTMLInputElement).value);
+    save("pot-ml", ml);
+    apply(ml);
+  });
+  // A tap on a size picks it and closes the list (after the pick lands);
+  // arrow keys only move, since they don't raise pointer events.
+  picker.querySelector(".pot-list")!.addEventListener("pointerup", (e) => {
+    if ((e.target as Element).closest("label")) setTimeout(close);
+  });
+  picker.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" || !(e.target instanceof HTMLInputElement)) return;
+    e.preventDefault();
+    close();
+    picker.querySelector("summary")!.focus();
+  });
+  document.addEventListener("click", (e) => {
+    if (picker.open && !picker.contains(e.target as Node)) close();
+  });
+  document.getElementById("menu")?.addEventListener("toggle", close);
+</script>

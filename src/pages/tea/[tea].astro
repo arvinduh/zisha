@@ -1,0 +1,97 @@
+---
+/**
+ * A tea's page: the numbers, the steps before and during each steep, and
+ * the steep timer. The cleanup lives in Daily care and is linked, not
+ * repeated. Full mode adds the reasons and the story of the tea.
+ */
+import type { GetStaticPaths } from "astro";
+import { getCollection } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import SteepTimer from "../../components/SteepTimer.astro";
+import Steps from "../../components/Steps.astro";
+import { DEFAULT_POT_ML, leaf } from "../../lib/infusion";
+import { annotator } from "../../lib/markup";
+import { href } from "../../lib/url";
+
+export const getStaticPaths = (async () => {
+  const teas = await getCollection("teas");
+  return teas.map((tea) => ({ params: { tea: tea.id }, props: { tea } }));
+}) satisfies GetStaticPaths;
+
+const { tea } = Astro.props;
+const t = tea.data;
+const gloss = await annotator();
+const SESSION_HOURS = 6;
+
+const leafText = leaf(DEFAULT_POT_ML, t.ratio);
+---
+
+<Base title={t.name} description={t.summary}>
+  <h1>{t.name} <span class="hz" set:html={gloss.text(t.hanzi)} /></h1>
+  <p class="lede full-only">{t.summary}</p>
+
+  <dl class="facts">
+    <div>
+      <dt>Your pot</dt>
+      <dd>
+        <button
+          class="pot-link"
+          type="button"
+          popovertarget="menu"
+          aria-label="Change your pot's size in the menu"
+          data-pot
+        >
+          {DEFAULT_POT_ML}&nbsp;ml
+        </button>
+      </dd>
+    </div>
+    <div>
+      <dt>Leaf</dt>
+      <dd data-leaf data-ratio={t.ratio}>{leafText}</dd>
+    </div>
+    <div>
+      <dt>Water</dt>
+      <dd>{t.tempC.join("-")} °C</dd>
+    </div>
+    <div>
+      <dt>Steeps</dt>
+      <dd>{t.infusions.total.join("-")}</dd>
+    </div>
+  </dl>
+  <p class="warn">
+    <strong>One pot, one tea.</strong> The zhuni pot is for this {t.name} only;
+    brew any other tea in the gaiwan.
+  </p>
+
+  <h2 id="before">Before</h2>
+  <Steps
+    steps={t.prepare}
+    track={`${tea.id}-before`}
+    ttl={SESSION_HOURS}
+    leaf={{ text: leafText, ratio: t.ratio }}
+  />
+
+  <h2>Each steep</h2>
+  <p class="meta">
+    Repeat for {t.infusions.total.join("-")} steeps; the timer below keeps count.
+    <button class="action" type="button" data-restart>New session</button>
+  </p>
+  <Steps steps={t.infuse} start={t.prepare.length + 1} />
+
+  <h2>After</h2>
+  <p>
+    Empty the pot, rinse it with just-boiled water, and let it air-dry with the
+    lid off. <a href={href("care/daily/#after")}>The full routine</a>
+  </p>
+
+  <section class="full-only prose">
+    <h2>About {t.name}</h2>
+    <Fragment set:html={gloss.html(tea.rendered?.html ?? "")} />
+    <p class="meta">
+      Recipe from {t.source}: {t.grams.join("-")} g in a {t.vessel.ml.join("-")} ml
+      {t.vessel.name}, the same 1:{t.ratio}.
+    </p>
+  </section>
+
+  <SteepTimer slot="tools" tea={tea.id} schedule={t.infusions} />
+</Base>

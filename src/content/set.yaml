@@ -1,0 +1,98 @@
+# The pieces of the gift, in the order they're introduced. `inBox: false`
+# lists things worth having that didn't come in the box.
+
+items:
+  - id: teapot
+    name: Zhuni teapot
+    hanzi: 朱泥壶
+    inBox: true
+    what: >-
+      Handmade from zhuni, the dense, iron-rich red clay of Yixing. It holds
+      heat, lifts a tea's aroma, and absorbs less than other zisha clays. It's
+      also the clay most sensitive to sudden heat, which is why it's always
+      warmed in two stages.
+    use: >-
+      This pot is for the Bai Mudan. Zhuni is classically an oolong clay, but
+      because it absorbs so little, it keeps a delicate white tea's aroma
+      clear; it just runs hot, so brew at 90 °C and leave the lid off between
+      steeps. To learn its size, fill it to the brim with water and pour that
+      into a measuring cup; use 1 g of leaf per 30 ml.
+    care: >-
+      Hot water only, then air-dry with the lid off. No towel, no soap.
+
+  - id: gaiwan
+    name: Gaiwan
+    hanzi: 盖碗
+    inBox: true
+    what: >-
+      A lidded bowl on a saucer. Glazed porcelain holds no flavor, so it brews
+      any tea: use it for everything that isn't the pot's Bai Mudan. The
+      seller's Bai Mudan card was written for a gaiwan, and works in it too.
+    use: >-
+      Fill to just below the rim so the rim stays cool. To pour, hold the rim
+      between thumb and middle finger, rest your index finger on the lid knob,
+      slide the lid back a few millimeters, and tip. Practice once with cool
+      water.
+    care: Rinse with hot water and let it air-dry.
+
+  - id: pitcher
+    name: Fairness pitcher
+    hanzi: 公道杯
+    inBox: true
+    what: >-
+      The first pour from a gaiwan is weaker than the last. Pouring everything
+      into the pitcher first evens it out, so both cups taste the same.
+    use: Decant the whole infusion into it, then pour from it into the cups.
+    care: Rinse with hot water and air-dry.
+
+  - id: cups
+    name: Two tasting cups
+    hanzi: 品茗杯
+    inBox: true
+    what: >-
+      Small cups for a few sips each. Gongfu tea is many small, fresh
+      infusions rather than one big mug, best shared between two.
+    use: Warm them with hot water first, then fill about three-quarters.
+    care: Rinse with hot water and air-dry.
+
+  - id: tea
+    name: Bai Mudan
+    hanzi: 白牡丹
+    inBox: true
+    what: White peony, a gentle white tea from Fujian.
+    use: Brew it in the zhuni pot (or the gaiwan), 1 g per 30 ml of water.
+    care: Keep it sealed, dark, dry, and away from strong smells.
+
+  - id: towel
+    name: A cotton tea towel
+    hanzi: 茶巾
+    inBox: false
+    what: >-
+      Any plain cotton cloth kept only for tea. Kitchen towels carry grease and
+      smells the clay will pick up.
+    use: For drips on the table. Not for the pot, which air-dries on its own.
+
+  - id: bowl
+    name: A waste bowl
+    hanzi: 水盂
+    inBox: false
+    what: Any bowl, for tipping out warm-up water and rinses at the table.
+    use: Empty it when you're done. A slatted tea tray does the same job.
+
+  - id: kettle
+    name: A kettle you can set to 95 °C
+    hanzi: 随手泡
+    inBox: false
+    what: Bai Mudan wants 90-95 °C water, and the first-use soak wants 80 °C.
+    use: >-
+      With an ordinary kettle, let boiled water rest with the lid open, about a
+      minute for 95 °C. A cheap kitchen thermometer settles it for good.
+
+  - id: scale
+    name: A small scale (0.1 g)
+    hanzi: 茶秤
+    inBox: false
+    what: >-
+      Fluffy white tea is hard to judge by eye, and 4 g versus 6 g is the
+      difference between sweet and harsh.
+    use: Set the warm gaiwan on it, tare to zero, then add leaves.

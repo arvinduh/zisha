@@ -1,0 +1,21 @@
+---
+/**
+ * Embeds one background article as a section, with its Chinese terms wired
+ * to the glossary tooltip and its links based. `fullOnly` hides it in Mini.
+ */
+import { getEntry } from "astro:content";
+import { annotator } from "../lib/markup";
+
+type Props = { id: string; fullOnly?: boolean };
+const { id, fullOnly = false } = Astro.props;
+const article = (await getEntry("learn", id))!;
+const gloss = await annotator();
+---
+
+<section class:list={["prose", { "full-only": fullOnly }]} id={id}>
+  <h2>
+    {article.data.title}{" "}
+    <span class="hz" set:html={gloss.text(article.data.hanzi)} />
+  </h2>
+  <Fragment set:html={gloss.html(article.rendered?.html ?? "")} />
+</section>

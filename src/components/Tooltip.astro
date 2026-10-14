@@ -1,0 +1,79 @@
+---
+/**
+ * The one shared tooltip behind every `.term`: hover on devices that can,
+ * tap elsewhere, focus with a keyboard. Positioned above the term, or below
+ * when there's no room, and kept inside the viewport.
+ */
+---
+
+<div class="tip" id="tip" role="tooltip" hidden>
+  <p class="tip-head"><span class="tip-hz"></span> <i class="tip-py"></i></p>
+  <p class="tip-def"></p>
+</div>
+
+<script>
+  const tip = document.getElementById("tip")!;
+  const hz = tip.querySelector<HTMLElement>(".tip-hz")!;
+  const py = tip.querySelector<HTMLElement>(".tip-py")!;
+  const def = tip.querySelector<HTMLElement>(".tip-def")!;
+  const canHover = matchMedia("(hover: hover)");
+  const GAP = 8;
+  let active: HTMLElement | null = null;
+
+  function show(term: HTMLElement): void {
+    if (active === term) return;
+    hide();
+    hz.textContent = term.dataset.hz!;
+    py.textContent = term.dataset.py!;
+    def.textContent = term.dataset.def!;
+    tip.hidden = false;
+    const r = term.getBoundingClientRect();
+    const { offsetWidth: w, offsetHeight: h } = tip;
+    const left = Math.min(
+      Math.max(GAP, r.left + r.width / 2 - w / 2),
+      innerWidth - w - GAP,
+    );
+    const above = r.top - h - GAP;
+    tip.style.left = `${left}px`;
+    tip.style.top = `${above >= GAP ? above : r.bottom + GAP}px`;
+    term.setAttribute("aria-describedby", "tip");
+    active = term;
+    requestAnimationFrame(() => tip.classList.add("on"));
+  }
+
+  function hide(): void {
+    if (!active) return;
+    active.removeAttribute("aria-describedby");
+    active = null;
+    tip.classList.remove("on");
+    tip.hidden = true;
+  }
+
+  const termOf = (e: Event): HTMLElement | null =>
+    (e.target as Element).closest<HTMLElement>(".term");
+
+  document.addEventListener("pointerover", (e) => {
+    const term = termOf(e);
+    if (term && e.pointerType === "mouse") show(term);
+  });
+  document.addEventListener("pointerout", (e) => {
+    if (e.pointerType === "mouse" && termOf(e) === active) hide();
+  });
+  document.addEventListener("click", (e) => {
+    const term = termOf(e);
+    if (!term) return hide();
+    if (canHover.matches) return;
+    if (active === term) hide();
+    else show(term);
+  });
+  document.addEventListener("focusin", (e) => {
+    const term = termOf(e);
+    if (term?.matches(":focus-visible")) show(term);
+  });
+  document.addEventListener("focusout", (e) => {
+    if (termOf(e) === active) hide();
+  });
+  document.addEventListener("keydown", (e) => e.key === "Escape" && hide());
+  addEventListener("scroll", hide, { passive: true, capture: true });
+  addEventListener("resize", hide);
+</script>

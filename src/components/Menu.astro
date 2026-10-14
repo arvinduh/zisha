@@ -1,0 +1,100 @@
+---
+/**
+ * The site's only navigation: a dot in the bottom-left corner that opens
+ * into a panel with a circular reveal. The site-wide settings on top (Full /
+ * Mini and the pot's size), then Start, then the teas and the Care pages each
+ * under a small
+ * label, all visible at once: with this few pages, a flat list beats nested
+ * menus.
+ *
+ * Built on the native Popover API, so opening, light-dismiss (tap outside or
+ * Esc), and focus order need no JavaScript.
+ */
+import { getCollection } from "astro:content";
+import ModeToggle from "./ModeToggle.astro";
+import PotSize from "./PotSize.astro";
+import { href } from "../lib/url";
+
+type Link = { path: string; label: string; hz?: string; note: string };
+type Group = { label?: string; links: Link[] };
+
+const teas = await getCollection("teas");
+const groups: Group[] = [
+  { links: [{ path: "", label: "Start", note: "first read" }] },
+  {
+    label: "Teas",
+    links: teas.map(({ id, data }) => ({
+      path: `tea/${id}/`,
+      label: data.name,
+      hz: data.hanzi,
+      note: "brew",
+    })),
+  },
+  {
+    label: "Care",
+    links: [
+      { path: "care/wake-up/", label: "Wake up the pot", note: "once" },
+      { path: "care/daily/", label: "Daily care", note: "rules, cleanup" },
+      { path: "care/fix/", label: "Something wrong?", note: "fixes" },
+      { path: "care/long-run/", label: "The long run", note: "patina, heat" },
+    ],
+  },
+];
+const here = Astro.url.pathname;
+const about = href("about/");
+
+// Stagger index for the entrance animation, counted across every row.
+let row = 1;
+const rows = groups.map((g) => ({
+  label: g.label && { text: g.label, i: row++ },
+  links: g.links.map((l) => ({ ...l, url: href(l.path), i: row++ })),
+}));
+---
+
+<button class="dot" type="button" popovertarget="menu" aria-label="Menu">
+  <span class="bars"></span>
+</button>
+
+<nav class="menu" id="menu" popover aria-label="Site">
+  <div class="menu-card">
+    <div class="menu-settings" style="--i:0">
+      <ModeToggle />
+      <PotSize />
+    </div>
+    {
+      rows.map((g) => (
+        <ul class:list={["menu-list", { sub: g.label }]}>
+          {g.label && (
+            <li class="menu-label" style={`--i:${g.label.i}`} aria-hidden="true">
+              {g.label.text}
+            </li>
+          )}
+          {g.links.map((l) => (
+            <li style={`--i:${l.i}`}>
+              <a href={l.url} aria-current={l.url === here ? "page" : undefined}>
+                <span>
+                  {l.label} {l.hz && <span class="hz">{l.hz}</span>}
+                </span>
+                <small>{l.note}</small>
+              </a>
+            </li>
+          ))}
+        </ul>
+      ))
+    }
+    <div class="menu-foot" style={`--i:${row}`}>
+      <button
+        class="dot"
+        type="button"
+        popovertarget="menu"
+        popovertargetaction="hide"
+        aria-label="Close menu"
+      >
+        <span class="bars"></span>
+      </button>
+      <a href={about} aria-current={about === here ? "page" : undefined}>
+        About this site
+      </a>
+    </div>
+  </div>
+</nav>

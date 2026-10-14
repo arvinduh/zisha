@@ -1,0 +1,38 @@
+---
+/**
+ * The site-wide Full / Mini switch, shown in the menu.
+ *
+ * Full (the default) shows every step's reasons and the long reads; Mini
+ * shows just the steps. The layout's head script applies the remembered
+ * choice to <html data-mode> before first paint; CSS does the rest.
+ */
+---
+
+<fieldset class="seg mode" style="--n:2">
+  <legend class="sr-only">Guide</legend>
+  <label>
+    <input type="radio" name="mode" value="full" />
+    <span>Full</span>
+  </label>
+  <label>
+    <input type="radio" name="mode" value="mini" />
+    <span>Mini</span>
+  </label>
+</fieldset>
+
+<script>
+  import { save } from "../lib/store";
+
+  const root = document.documentElement;
+  for (const radio of document.querySelectorAll<HTMLInputElement>(
+    "input[name=mode]",
+  )) {
+    radio.checked = radio.value === root.dataset.mode;
+    radio.addEventListener("change", () => {
+      save("mode", radio.value);
+      const apply = (): void => void (root.dataset.mode = radio.value);
+      if ("startViewTransition" in document) document.startViewTransition(apply);
+      else apply();
+    });
+  }
+</script>

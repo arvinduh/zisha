@@ -1,0 +1,43 @@
+# The non-negotiables, in priority order. The bold line is all Mini shows, so
+# each one has to work on its own; Full adds the reason.
+
+items:
+  - id: no-soap
+    rule: No soap, no dishwasher. Hot water only.
+    why: >-
+      Unglazed clay is full of tiny pores. Detergent soaks in, can't be rinsed
+      back out, and tastes like soap in every brew after.
+
+  - id: empty-dry
+    rule: Empty it right away, then let it air-dry, lid off. No towel.
+    why: >-
+      Wet leaves or tea left inside grow mold and leave sour, dark stains. The
+      pot's maker says to dry it open in the air rather than towel it; heat and
+      air dry it evenly.
+
+  - id: one-tea
+    rule: One pot, one tea. This one is for the Bai Mudan.
+    why: >-
+      The clay absorbs a little of every brew. Mix teas and their flavors
+      muddy each other for good. Brew anything else in the gaiwan.
+
+  - id: warm-first
+    rule: Warm it in two stages before boiling water, every time.
+    why: >-
+      Lukewarm water (40-50 °C) for 90 seconds, then hot (80-85 °C) for 30-45
+      seconds, then brew; it's the start of every [brew](/tea/bai-mudan/#before).
+      Zhuni is the clay most sensitive to sudden heat, and its makers say never
+      to skip this, even in summer. Never use a flame, microwave, or fridge.
+
+  - id: hold-lid
+    rule: A fingernail on the lid when you pour.
+    why: >-
+      The lid sits loose and gets too hot to hold. Resting just the tip of a
+      fingernail on it keeps it seated, and the lid is the part that breaks most
+      often.
+
+  - id: no-grease
+    rule: Clean hands, no lotion, and keep it out of the kitchen haze.
+    why: >-
+      Oils leave a sticky, muddy fake shine that blocks the clay from breathing.
+      Real patina comes only from tea and hot water.

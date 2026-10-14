@@ -1,0 +1,128 @@
+---
+/**
+ * Renders a procedure in both reading modes at once.
+ *
+ * Each step is one paragraph led by its bold `do` line; Full mode runs the
+ * `how` and `why` on after it as prose, Mini shows the lead alone. Warnings
+ * show in both. With `track`, each step gets a checkbox saved under that key;
+ * with `ttl` (hours) the ticks expire, and any `[data-restart]` button
+ * clears them. A `{leaf}` token in step text shows the amount of leaf for the
+ * reader's pot (kept current by the PotSize setting).
+ */
+import type { CollectionEntry } from "astro:content";
+import { annotator } from "../lib/markup";
+import { clock } from "../lib/timing";
+
+type Step = CollectionEntry<"rituals">["data"]["steps"][number];
+type Props = {
+  steps: Step[];
+  start?: number;
+  track?: string;
+  ttl?: number;
+  leaf?: { text: string; ratio: number };
+};
+const { steps, start = 1, track, ttl, leaf } = Astro.props;
+const gloss = await annotator();
+const text = (s: string): string => {
+  const html = gloss.text(s);
+  if (!leaf) return html;
+  const span = `<span data-leaf data-ratio="${leaf.ratio}">${leaf.text}</span>`;
+  return html.replaceAll("{leaf}", span);
+};
+---
+
+<ol class="steps" data-track={track} data-ttl={ttl}>
+  {
+    steps.map((step, i) => {
+      const more = [step.how, step.why].filter(Boolean).join(" ");
+      return (
+        <li class="step">
+          {track ? (
+            <label class="check">
+              <input type="checkbox" aria-label={`Step ${start + i} done`} />
+              <span aria-hidden="true">{start + i}</span>
+            </label>
+          ) : (
+            <span class="num" aria-hidden="true">
+              {start + i}
+            </span>
+          )}
+          <div class="step-body">
+            <p>
+              <strong set:html={text(step.do)} />
+              {more && <span class="full-only" set:html={` ${text(more)}`} />}
+            </p>
+            {step.warn && (
+              <p class="warn">
+                <strong>Careful.</strong> <Fragment set:html={text(step.warn)} />
+              </p>
+            )}
+            {step.timer && (
+              <button class="action" type="button" data-seconds={step.timer}>
+                Start a {clock(step.timer)} timer
+              </button>
+            )}
+          </div>
+        </li>
+      );
+    })
+  }
+</ol>
+
+<script>
+  import { load, save } from "../lib/store";
+  import { chime, clock, countdown, primeAudio } from "../lib/timing";
+
+  type Ticks = { done: boolean[]; at: number };
+
+  for (const list of document.querySelectorAll<HTMLElement>("[data-track]")) {
+    const key = `checks:${list.dataset.track}`;
+    const ttl = Number(list.dataset.ttl ?? 0) * 60 * 60 * 1000;
+    const boxes = [...list.querySelectorAll<HTMLInputElement>("input")];
+    const saved = load<Ticks>(key);
+    const fresh = saved && (!ttl || Date.now() - saved.at < ttl);
+    boxes.forEach((box, i) => (box.checked = fresh ? !!saved.done[i] : false));
+
+    const persist = (): void =>
+      save(key, {
+        done: boxes.map((box) => box.checked),
+        at: Date.now(),
+      } satisfies Ticks);
+    list.addEventListener("change", persist);
+
+    if (ttl) {
+      for (const btn of document.querySelectorAll("[data-restart]")) {
+        btn.addEventListener("click", () => {
+          for (const box of boxes) box.checked = false;
+          persist();
+        });
+      }
+    }
+  }
+
+  for (const btn of document.querySelectorAll<HTMLButtonElement>(
+    "[data-seconds]",
+  )) {
+    const seconds = Number(btn.dataset.seconds);
+    const idle = btn.textContent;
+    let cancel: (() => void) | null = null;
+    btn.addEventListener("click", () => {
+      if (cancel) {
+        cancel();
+        cancel = null;
+        btn.textContent = idle;
+        return;
+      }
+      primeAudio();
+      cancel = countdown(
+        seconds,
+        (left) => (btn.textContent = `${clock(left)} left · tap to cancel`),
+        () => {
+          cancel = null;
+          chime();
+          btn.textContent = "Time's up. Start again";
+        },
+      );
+    });
+  }
+</script>

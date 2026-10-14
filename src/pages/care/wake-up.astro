@@ -1,0 +1,20 @@
+---
+/**
+ * Wake up the pot: the one-time seasoning walkthrough, ticked off as you go.
+ */
+import { getEntry } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import Steps from "../../components/Steps.astro";
+import { annotator } from "../../lib/markup";
+
+const wake = (await getEntry("rituals", "first-use"))!.data;
+const gloss = await annotator();
+const lower = (s: string): string => s.charAt(0).toLowerCase() + s.slice(1);
+---
+
+<Base title={wake.title} description={wake.summary}>
+  <h1>{wake.title} <span class="hz" set:html={gloss.text(wake.hanzi)} /></h1>
+  <p class="lede">{wake.summary}</p>
+  <p class="meta">You'll need: {wake.needs.map(lower).join("; ")}.</p>
+  <Steps steps={wake.steps} track="first-use" />
+</Base>

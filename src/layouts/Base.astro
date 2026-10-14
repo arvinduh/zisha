@@ -1,0 +1,49 @@
+---
+/**
+ * Page shell: head, the reading column, the menu dot, and the shared
+ * glossary tooltip.
+ *
+ * Navigation lives only in the menu; pages link to each other inline. The
+ * head script applies the remembered Full / Mini mode before first paint so
+ * nothing jumps.
+ */
+import { Font } from "astro:assets";
+import Menu from "../components/Menu.astro";
+import Tooltip from "../components/Tooltip.astro";
+import { paletteCss } from "../lib/palette";
+import { href } from "../lib/url";
+import "../styles/global.css";
+
+type Props = { title?: string; description?: string };
+const { title, description } = Astro.props;
+const pageTitle = title ? `${title} · Zisha` : "Zisha";
+---
+
+<!doctype html>
+<html lang="en" data-mode="full">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{pageTitle}</title>
+    {description && <meta name="description" content={description} />}
+    <meta name="theme-color" content="#f3ece1" />
+    <link rel="icon" href={href("favicon.svg")} type="image/svg+xml" />
+    <link rel="manifest" href={href("manifest.webmanifest")} />
+    <Font cssVariable="--font-serif" preload={[{ style: "normal" }]} />
+    <style is:inline set:html={paletteCss()}></style>
+    <script is:inline>
+      try {
+        document.documentElement.dataset.mode =
+          JSON.parse(localStorage.getItem("zisha:mode")) || "full";
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <main>
+      <slot />
+    </main>
+    <slot name="tools" />
+    <Menu />
+    <Tooltip />
+  </body>
+</html>

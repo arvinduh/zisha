@@ -1,0 +1,1413 @@
+/*
+ * Design language: quiet, premium, paper-and-ink.
+ * Colours come from src/lib/palette.ts (emitted on :root by the layout).
+ * One typeface (Crimson Pro). Roles, largest to smallest:
+ *   title (h1) · subtitle (.lede) · section (h2, honey rule above) ·
+ *   sub-section (h3) · body with bold run-in leads · meta (.meta, italic).
+ * Motion only on arrival and on state changes; reading is still.
+ */
+
+:root {
+  --serif: var(--font-serif), "Songti SC", "Noto Serif CJK SC", serif;
+  --cjk: "Songti SC", "STSong", "Noto Serif CJK SC", "Source Han Serif SC",
+    serif;
+  --gutter: 1.25rem;
+  --dot: 3.5rem;
+  --edge: 1rem;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --honey-wash: color-mix(in oklab, var(--honey) 38%, var(--surface));
+  --shadow-soft: 0 12px 32px rgb(47 36 29 / 0.14);
+
+  color-scheme: light;
+}
+
+@view-transition {
+  navigation: auto;
+}
+
+/* Pages hand over quickly; the new page's own arrival animation does the rest. */
+::view-transition-old(root) {
+  animation: 0.15s ease both fade-out;
+}
+
+::view-transition-new(root) {
+  animation: none;
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+/* ---- Base ------------------------------------------------------------ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: 2rem;
+  /* The page only ever moves up and down: nothing pokes past the edge, and
+     sideways pans and overscroll are off. Pinch-zoom stays. */
+  overflow-x: clip;
+  overscroll-behavior-x: none;
+  touch-action: pan-y pinch-zoom;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--muted) 40%, transparent)
+    transparent;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 10px;
+  background: color-mix(in oklab, var(--muted) 40%, transparent) padding-box;
+}
+
+body {
+  margin: 0;
+  overflow-x: clip;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+main {
+  max-width: 44rem;
+  margin-inline: auto;
+  padding: 3.5rem var(--gutter) calc(var(--dot) + var(--edge) + 4rem);
+}
+
+h1,
+h2,
+h3 {
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: clamp(2.6rem, 2rem + 3vw, 3.4rem);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  margin: 0 0 1.25rem;
+}
+
+/* Sections announce themselves with a short honey rule. */
+h2 {
+  font-size: 1.85rem;
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  margin: 4.5rem 0 1.5rem;
+}
+
+h2::before {
+  content: "";
+  display: block;
+  width: 2rem;
+  height: 2px;
+  margin-bottom: 1.1rem;
+  background: var(--honey);
+}
+
+h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 2.25rem 0 0.5rem;
+}
+
+p {
+  margin: 0 0 1em;
+}
+
+a {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-color: var(--honey);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.2em;
+  transition: text-decoration-color 0.2s ease;
+}
+
+a:hover {
+  text-decoration-color: currentColor;
+}
+
+:focus-visible {
+  outline: 2px solid var(--honey);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+strong {
+  font-weight: 600;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.hz {
+  font-family: var(--cjk);
+  font-weight: 400;
+  font-size: 0.68em;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.lede {
+  font-size: 1.35rem;
+  line-height: 1.5;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.meta {
+  font-size: 1.05rem;
+  font-style: italic;
+  color: var(--muted);
+}
+
+/* Small phones (iPhone mini to Pro): a touch smaller, more words a line. */
+@media (max-width: 26.25rem) {
+  body {
+    font-size: 1.1875rem;
+  }
+
+  main {
+    padding-top: 2.5rem;
+  }
+
+  h1 {
+    font-size: 2.45rem;
+  }
+
+  h2 {
+    font-size: 1.65rem;
+  }
+
+  .lede {
+    font-size: 1.25rem;
+  }
+}
+
+/* An in-content action: looks like a link, behaves like a button. */
+.action {
+  font: inherit;
+  font-size: 1.05rem;
+  color: var(--ink);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--honey);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.2em;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.action:hover {
+  text-decoration-color: currentColor;
+}
+
+/* The teapot mark above the home title. */
+.mark {
+  display: block;
+  margin-bottom: 1.25rem;
+  color: var(--espresso);
+}
+
+/* ---- Arrival --------------------------------------------------------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  main > * {
+    animation: rise 0.7s var(--ease) both;
+    animation-delay: 0.3s;
+  }
+
+  main > :nth-child(1) {
+    animation-delay: 0s;
+  }
+  main > :nth-child(2) {
+    animation-delay: 0.05s;
+  }
+  main > :nth-child(3) {
+    animation-delay: 0.1s;
+  }
+  main > :nth-child(4) {
+    animation-delay: 0.15s;
+  }
+  main > :nth-child(5) {
+    animation-delay: 0.2s;
+  }
+  main > :nth-child(6) {
+    animation-delay: 0.25s;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+/* ---- Reading mode ---------------------------------------------------- */
+
+html[data-mode="mini"] .full-only,
+html:not([data-mode="mini"]) .mini-only {
+  display: none;
+}
+
+html[data-mode="mini"] h2 {
+  margin-top: 3rem;
+}
+
+/* ---- Glossary terms -------------------------------------------------- */
+
+.term {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: help;
+  text-decoration: underline dotted var(--honey);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.22em;
+}
+
+.tip {
+  position: fixed;
+  z-index: 30;
+  max-width: min(17rem, calc(100vw - 1rem));
+  margin: 0;
+  padding: 0.65rem 0.85rem 0.7rem;
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow:
+    0 0 0 1px rgb(47 36 29 / 0.08),
+    var(--shadow-soft);
+  font-size: 1rem;
+  line-height: 1.4;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition:
+    opacity 0.18s ease,
+    transform 0.3s var(--ease);
+}
+
+.tip.on {
+  opacity: 1;
+  transform: none;
+}
+
+.tip p {
+  margin: 0;
+}
+
+.tip-head {
+  margin-bottom: 0.2rem !important;
+}
+
+.tip-hz {
+  font-family: var(--cjk);
+  font-size: 1.05rem;
+}
+
+.tip-py {
+  color: var(--muted);
+}
+
+/* ---- Facts row ------------------------------------------------------- */
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem 1rem;
+  margin: 2rem 0 1.5rem;
+  padding: 1.25rem 0;
+  border-block: 1px solid var(--line);
+}
+
+@media (min-width: 34rem) {
+  .facts {
+    grid-template-columns: repeat(4, auto);
+    justify-content: space-between;
+  }
+}
+
+.facts dt {
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--muted);
+}
+
+.facts dt::first-letter {
+  text-transform: uppercase;
+}
+
+.facts dd {
+  margin: 0;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  font-variant-numeric: lining-nums;
+}
+
+/* On a tea page, the pot size reads as a number and opens the menu. */
+.pot-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-variant-numeric: lining-nums;
+  text-decoration: underline dotted var(--honey);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.22em;
+  cursor: pointer;
+}
+
+/* ---- Steps and rules ------------------------------------------------- */
+
+.steps,
+.rules {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.step,
+.rules li {
+  display: grid;
+  grid-template-columns: 2.4rem 1fr;
+  padding-bottom: 1.4rem;
+}
+
+html[data-mode="mini"] :is(.step, .rules li) {
+  padding-bottom: 0.7rem;
+}
+
+.step p,
+.rules p {
+  margin: 0;
+}
+
+.num,
+.rules li::before {
+  font-variant-numeric: lining-nums;
+  color: var(--honey);
+}
+
+.rules {
+  counter-reset: rule;
+}
+
+.rules li {
+  counter-increment: rule;
+}
+
+.rules li::before {
+  content: counter(rule);
+}
+
+.rules.plain li::before {
+  content: "";
+  width: 0.4rem;
+  height: 0.4rem;
+  margin-top: 0.7em;
+  border-radius: 50%;
+  background: var(--honey);
+}
+
+.warn {
+  margin: 0.6rem 0 0 !important;
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--terracotta);
+}
+
+.warn strong {
+  color: var(--terracotta);
+}
+
+.step .action {
+  display: block;
+  margin-top: 0.5rem;
+}
+
+/* Checkable steps: the number sits in a quiet ring that fills when done. */
+.check {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 1.65rem;
+  height: 1.65rem;
+  margin-top: 0.2rem;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1.5px var(--honey);
+  color: var(--muted);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition:
+    background-color 0.25s ease,
+    box-shadow 0.25s ease,
+    color 0.15s ease;
+}
+
+.check input {
+  position: absolute;
+  inset: -0.6rem;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.check:has(input:focus-visible) {
+  outline: 2px solid var(--honey);
+  outline-offset: 3px;
+}
+
+.check:has(input:checked) {
+  background: var(--espresso);
+  box-shadow: inset 0 0 0 1.5px var(--espresso);
+  color: transparent;
+}
+
+.check:has(input:checked)::after {
+  content: "";
+  position: absolute;
+  width: 0.4rem;
+  height: 0.75rem;
+  border: solid var(--surface);
+  border-width: 0 2px 2px 0;
+  transform: translateY(-0.08rem) rotate(45deg);
+  animation: tick 0.35s var(--ease);
+}
+
+@keyframes tick {
+  from {
+    opacity: 0;
+    transform: translateY(-0.08rem) rotate(45deg) scale(0.4);
+  }
+}
+
+.step-body {
+  transition: opacity 0.3s ease;
+}
+
+.step:has(.check input:checked) .step-body {
+  opacity: 0.45;
+}
+
+/* ---- Day one path ---------------------------------------------------- */
+
+.path {
+  list-style: none;
+  counter-reset: path;
+  padding: 0;
+  margin: 0;
+}
+
+.path li {
+  counter-increment: path;
+  display: grid;
+  grid-template-columns: 2.4rem 1fr;
+  padding-bottom: 1rem;
+}
+
+.path li::before {
+  content: counter(path);
+  grid-row: span 2;
+  color: var(--honey);
+  font-variant-numeric: lining-nums;
+}
+
+.path a {
+  font-weight: 600;
+  justify-self: start;
+}
+
+.path span {
+  color: var(--muted);
+}
+
+/* ---- Set ------------------------------------------------------------- */
+
+.pieces {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.pieces li {
+  margin-bottom: 1.1rem;
+}
+
+/* ---- Fixes ----------------------------------------------------------- */
+
+details > summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.fixes {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-top: 1px solid var(--line);
+}
+
+.fixes > li {
+  border-bottom: 1px solid var(--line);
+}
+
+.fixes summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 1rem 0;
+}
+
+.fixes summary::after {
+  content: "+";
+  color: var(--honey);
+  font-size: 1.4rem;
+  line-height: 1;
+  transition: transform 0.3s var(--ease);
+}
+
+.fixes details[open] summary::after {
+  transform: rotate(45deg);
+}
+
+.fix-symptom {
+  flex: 1;
+}
+
+.urgency {
+  display: block;
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--muted);
+}
+
+.urgency.stop {
+  color: var(--terracotta);
+}
+
+.fixes ol {
+  margin: 0 0 1rem;
+  padding-left: 1.4rem;
+}
+
+.fixes ol li {
+  margin-bottom: 0.4rem;
+}
+
+.fixes ol li::marker {
+  color: var(--honey);
+}
+
+/* ---- Prose (Markdown) ------------------------------------------------ */
+
+.prose ul,
+.prose ol {
+  padding-left: 1.3rem;
+}
+
+.prose li {
+  margin-bottom: 0.45rem;
+}
+
+.prose li::marker {
+  color: var(--honey);
+}
+
+/* ---- About ----------------------------------------------------------- */
+
+.swatches {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem 0.75rem;
+}
+
+.swatches li {
+  display: grid;
+  gap: 0.15rem;
+  line-height: 1.25;
+}
+
+.chip {
+  aspect-ratio: 1;
+  margin-bottom: 0.45rem;
+  border-radius: 14px;
+  box-shadow: inset 0 0 0 1px rgb(47 36 29 / 0.1);
+}
+
+.swatches .action,
+.faces .action,
+.faces a {
+  justify-self: start;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.swatches .action {
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.swatches .meta,
+.faces .meta {
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.faces {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0 2rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem 0.75rem;
+}
+
+.faces li {
+  display: grid;
+  gap: 0.15rem;
+  line-height: 1.25;
+}
+
+.face {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 2;
+  margin-bottom: 0.45rem;
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px rgb(47 36 29 / 0.08);
+  font-size: 2.6rem;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.face.cjk {
+  font-family: var(--cjk);
+  font-weight: 400;
+}
+
+.face-links {
+  display: flex;
+  gap: 0.9rem;
+}
+
+.scale {
+  margin: 0;
+  border-top: 1px solid var(--line);
+}
+
+.scale > div {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: 0.75rem;
+  align-items: baseline;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.scale dt {
+  font-size: 0.95rem;
+  font-style: italic;
+  color: var(--muted);
+}
+
+.scale dd {
+  margin: 0;
+}
+
+.t-title {
+  font-size: 2.2rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.t-section {
+  font-size: 1.85rem;
+  line-height: 1.15;
+}
+
+.t-meta {
+  font-size: 1.05rem;
+  font-style: italic;
+  color: var(--muted);
+}
+
+.sign {
+  margin-top: -0.25rem;
+  text-align: right;
+  font-style: italic;
+}
+
+/* ---- Menu ------------------------------------------------------------ */
+
+.dot {
+  position: fixed;
+  left: var(--edge);
+  bottom: calc(var(--edge) + env(safe-area-inset-bottom));
+  z-index: 20;
+  width: var(--dot);
+  height: var(--dot);
+  border: 0;
+  border-radius: 50%;
+  background: var(--espresso);
+  color: var(--surface);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow:
+    0 0 0 0 rgb(47 36 29 / 0),
+    0 2px 6px rgb(47 36 29 / 0.16),
+    0 12px 32px rgb(47 36 29 / 0.18);
+  transition:
+    transform 0.4s var(--ease),
+    box-shadow 0.4s var(--ease);
+  view-transition-name: menu-dot;
+}
+
+.dot:active {
+  transform: scale(0.94);
+}
+
+.bars {
+  position: relative;
+  width: 1.15rem;
+  height: 0.6rem;
+}
+
+.bars::before,
+.bars::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1.5px;
+  border-radius: 1px;
+  background: currentColor;
+  transition:
+    transform 0.45s var(--ease),
+    right 0.45s var(--ease);
+}
+
+.bars::before {
+  top: 0;
+}
+
+/* The lower line rests shorter and stretches out on hover. */
+.bars::after {
+  bottom: 0;
+  right: 40%;
+}
+
+@media (hover: hover) {
+  .dot:hover {
+    transform: scale(1.06);
+    box-shadow:
+      0 0 0 8px rgb(47 36 29 / 0.07),
+      0 4px 10px rgb(47 36 29 / 0.18),
+      0 16px 40px rgb(47 36 29 / 0.2);
+  }
+
+  .dot:hover .bars::after {
+    right: 0;
+  }
+
+  .dot:active {
+    transform: scale(0.96);
+  }
+}
+
+/*
+ * The popover is a transparent, shadow-casting frame; the card inside grows
+ * out of the dot with a circular reveal, from espresso to linen, while the
+ * contents rise in one after another. The close button sits exactly where
+ * the dot was, so the dot appears to open and close the panel itself.
+ */
+.menu {
+  position: fixed;
+  inset: auto auto calc(var(--edge) + env(safe-area-inset-bottom)) var(--edge);
+  width: min(21rem, calc(100vw - 2 * var(--edge)));
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  overflow: visible;
+  filter: drop-shadow(0 18px 40px rgb(47 36 29 / 0.22));
+  transition:
+    overlay 0.5s allow-discrete,
+    display 0.5s allow-discrete;
+}
+
+.menu-card {
+  --r: calc(var(--dot) / 2);
+  border-radius: 28px;
+  background: var(--espresso);
+  clip-path: circle(var(--r) at var(--r) calc(100% - var(--r)));
+  transition:
+    clip-path 0.5s var(--ease),
+    background-color 0.35s ease;
+}
+
+.menu:popover-open .menu-card {
+  background: var(--surface);
+  clip-path: circle(150% at var(--r) calc(100% - var(--r)));
+}
+
+@starting-style {
+  .menu:popover-open .menu-card {
+    background: var(--espresso);
+    clip-path: circle(var(--r) at var(--r) calc(100% - var(--r)));
+  }
+}
+
+.menu::backdrop {
+  background: rgb(243 236 225 / 0.18);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  mask-image: radial-gradient(
+    circle at 0% 100%,
+    #000 0%,
+    #000 35%,
+    transparent 80%
+  );
+  opacity: 0;
+  transition:
+    opacity 0.4s ease,
+    overlay 0.5s allow-discrete,
+    display 0.5s allow-discrete;
+}
+
+.menu:popover-open::backdrop {
+  opacity: 1;
+}
+
+@starting-style {
+  .menu:popover-open::backdrop {
+    opacity: 0;
+  }
+}
+
+.menu-settings,
+.menu-list li,
+.menu-foot a {
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.menu:popover-open :is(.menu-settings, .menu-list li, .menu-foot a) {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.4s ease calc(0.12s + var(--i) * 0.05s),
+    transform 0.5s var(--ease) calc(0.12s + var(--i) * 0.05s);
+}
+
+@starting-style {
+  .menu:popover-open :is(.menu-settings, .menu-list li, .menu-foot a) {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+.menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 1.5rem 0;
+}
+
+.menu-list:last-of-type {
+  padding-bottom: 1rem;
+}
+
+.menu-label {
+  padding: 0.85rem 0 0.15rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.menu-list.sub a {
+  padding: 0.3rem 0;
+  font-size: 1.3rem;
+}
+
+.menu-list a {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.45rem 0;
+  font-size: 1.6rem;
+  line-height: 1.25;
+  text-decoration: none;
+}
+
+.menu-list a[aria-current="page"] > span:first-child::before {
+  content: "";
+  display: inline-block;
+  width: 0.4rem;
+  height: 0.4rem;
+  margin: 0 0.6rem 0.25rem 0;
+  border-radius: 50%;
+  background: var(--honey);
+}
+
+.menu-list small {
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--muted);
+}
+
+.menu-foot {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  border-top: 1px solid var(--line);
+}
+
+.menu-foot .dot {
+  position: static;
+  flex: none;
+  box-shadow: none;
+  view-transition-name: none;
+}
+
+.menu-foot .dot:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.menu-foot .bars::after {
+  right: 0;
+}
+
+.menu-foot .bars::before {
+  transform: translateY(0.27rem) rotate(45deg);
+}
+
+.menu-foot .bars::after {
+  transform: translateY(-0.27rem) rotate(-45deg);
+}
+
+@starting-style {
+  .menu:popover-open .menu-foot .bars::before,
+  .menu:popover-open .menu-foot .bars::after {
+    transform: none;
+  }
+}
+
+.menu-foot a {
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.menu-foot a[aria-current="page"] {
+  color: var(--ink);
+}
+
+/*
+ * The settings row: Full / Mini on the left, the pot's size on the right.
+ * It sits apart from navigation: the same inset as the sides, then a
+ * full-width hairline mirroring the one above the footer. Padding, not
+ * margin, so the inset can't collapse through the card.
+ */
+.menu-settings {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem 1.5rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.menu-settings + .menu-list {
+  padding-top: 1rem;
+}
+
+/* The pot size: a pill that drops down a short, rounded list. */
+.pot {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pot-label {
+  font-size: 1.05rem;
+  font-style: italic;
+  color: var(--muted);
+}
+
+.pot-picker {
+  position: relative;
+}
+
+.pot-picker > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-width: 5.6rem;
+  padding: 0.25rem 0.75rem 0.25rem 0.9rem;
+  border-radius: 999px;
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-size: 1rem;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--ink);
+}
+
+.pot-picker > summary::after {
+  content: "";
+  width: 0.42rem;
+  height: 0.42rem;
+  border: solid var(--honey);
+  border-width: 0 1.6px 1.6px 0;
+  transform: translateY(-0.12rem) rotate(45deg);
+  transition: transform 0.3s var(--ease);
+}
+
+.pot-picker[open] > summary::after {
+  transform: translateY(0.1rem) rotate(-135deg);
+}
+
+.pot-list {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  display: grid;
+  min-width: 100%;
+  margin: 0;
+  padding: 0.3rem;
+  border: 0;
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow:
+    0 0 0 1px rgb(47 36 29 / 0.08),
+    var(--shadow-soft);
+  transform-origin: top right;
+  animation: drop 0.28s var(--ease);
+}
+
+@keyframes drop {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.96);
+  }
+}
+
+.pot-list label {
+  position: relative;
+  cursor: pointer;
+}
+
+.pot-list input {
+  position: absolute;
+  opacity: 0;
+}
+
+.pot-list span {
+  display: block;
+  padding: 0.3rem 0.9rem;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-variant-numeric: lining-nums tabular-nums;
+  white-space: nowrap;
+  color: var(--muted);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.pot-list label:hover span {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.pot-list input:checked + span {
+  background: var(--espresso);
+  color: var(--surface);
+}
+
+.pot-list input:focus-visible + span {
+  outline: 2px solid var(--honey);
+  outline-offset: -2px;
+}
+
+/*
+ * Segmented control (Full / Mini, pot size): an espresso pill slides to the
+ * chosen option. `--n` is the number of options, `--at` the chosen index.
+ */
+.seg {
+  --at: 0;
+  position: relative;
+  display: inline-grid;
+  grid-template-columns: repeat(var(--n), 1fr);
+  margin: 0;
+  padding: 3px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+/* Follows <html data-mode>, so it's right before any script runs. */
+html[data-mode="mini"] .mode {
+  --at: 1;
+}
+
+.seg::before {
+  content: "";
+  position: absolute;
+  inset: 3px auto 3px 3px;
+  width: calc((100% - 6px) / var(--n));
+  border-radius: 999px;
+  background: var(--espresso);
+  transform: translateX(calc(var(--at) * 100%));
+  transition: transform 0.4s var(--ease);
+}
+
+.seg label {
+  position: relative;
+  cursor: pointer;
+}
+
+.seg input {
+  position: absolute;
+  opacity: 0;
+}
+
+.seg span {
+  display: block;
+  padding: 0.25rem 0.75rem;
+  font-size: 1rem;
+  text-align: center;
+  color: var(--muted);
+  font-variant-numeric: lining-nums;
+  transition: color 0.3s ease;
+}
+
+.seg input:checked + span {
+  color: var(--surface);
+}
+
+.seg input:focus-visible + span {
+  outline: 2px solid var(--honey);
+  outline-offset: 2px;
+  border-radius: 999px;
+}
+
+/* ---- Steep timer pill ------------------------------------------------ */
+
+.timer {
+  position: fixed;
+  left: calc(var(--edge) + var(--dot) + 0.5rem);
+  right: var(--edge);
+  bottom: calc(var(--edge) + env(safe-area-inset-bottom));
+  z-index: 10;
+  max-width: 24rem;
+  height: var(--dot);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0 0.3rem 0 0.35rem;
+  border-radius: 999px;
+  background: rgb(250 246 240 / 0.86);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow:
+    0 0 0 1px rgb(47 36 29 / 0.08),
+    var(--shadow-soft);
+  overflow: hidden;
+  isolation: isolate;
+  view-transition-name: steep-timer;
+}
+
+/* Pale liquor fills the pill as the tea steeps. */
+.timer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--honey-wash);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: background-color 0.4s ease;
+}
+
+.timer[data-state="running"]::before {
+  animation: steep var(--steep, 7s) linear forwards;
+}
+
+.timer[data-state="done"]::before {
+  transform: none;
+  background: var(--honey);
+}
+
+@keyframes steep {
+  to {
+    transform: none;
+  }
+}
+
+.timer-n {
+  display: flex;
+  align-items: center;
+}
+
+.timer-n button {
+  width: 1.9rem;
+  height: 2.75rem;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.timer-n button:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.timer-label,
+.timer-time {
+  display: grid;
+  line-height: 1.05;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.timer-label {
+  justify-items: center;
+  min-width: 2.2rem;
+}
+
+.timer-label b,
+.timer-time b {
+  font-weight: 500;
+}
+
+.timer-label b {
+  font-size: 1.35rem;
+}
+
+.timer-time {
+  padding-left: 0.5rem;
+}
+
+.timer-time b {
+  font-size: 1.6rem;
+}
+
+.timer small {
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--muted);
+}
+
+.timer[data-state="done"] small {
+  color: var(--ink);
+}
+
+.timer-go {
+  width: 2.9rem;
+  height: 2.9rem;
+  border: 0;
+  border-radius: 50%;
+  background: var(--espresso);
+  color: var(--surface);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: transform 0.25s var(--ease);
+}
+
+.timer-go:active {
+  transform: scale(0.92);
+}
+
+.timer-go svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  fill: currentColor;
+}
+
+.timer-go .i-stop,
+.timer[data-state="running"] .i-play {
+  display: none;
+}
+
+.timer[data-state="running"] .i-stop {
+  display: block;
+}
+
+/* ---- Reduced motion -------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+
+  *,
+  *::before,
+  *::after,
+  .menu::backdrop {
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+}

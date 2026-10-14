@@ -1,0 +1,25 @@
+---
+/**
+ * A list of bold lines that each stand alone, with the reason run on after
+ * in Full mode. Numbered for rules, bulleted otherwise.
+ */
+import { annotator } from "../lib/markup";
+
+type Props = { items: { rule: string; why: string }[]; numbered?: boolean };
+const { items, numbered = true } = Astro.props;
+const gloss = await annotator();
+const List = numbered ? "ol" : "ul";
+---
+
+<List class:list={["rules", { plain: !numbered }]}>
+  {
+    items.map((item) => (
+      <li>
+        <p>
+          <strong set:html={gloss.text(item.rule)} />
+          <span class="full-only" set:html={` ${gloss.text(item.why)}`} />
+        </p>
+      </li>
+    ))
+  }
+</List>

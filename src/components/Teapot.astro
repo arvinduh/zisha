@@ -1,0 +1,28 @@
+---
+/**
+ * The teapot mark, drawn in `currentColor` at the given size in pixels.
+ */
+import { regular } from "../lib/teapot";
+
+type Props = { size?: number };
+const { size = 48 } = Astro.props;
+---
+
+<svg
+  class="mark"
+  width={size}
+  height={size}
+  viewBox="0 0 64 64"
+  aria-hidden="true"
+>
+  <g
+    fill="none"
+    stroke="currentColor"
+    stroke-width={regular.width}
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    {regular.strokes.map((d) => <path d={d} />)}
+  </g>
+  <circle {...regular.knob} fill="currentColor" />
+</svg>

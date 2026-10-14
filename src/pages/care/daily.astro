@@ -1,0 +1,36 @@
+---
+/**
+ * Daily care: the rules, the routine after every session, and how to store
+ * the pot and the tea. Each lives only here; other pages link in.
+ */
+import { getEntry } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import Rules from "../../components/Rules.astro";
+import Steps from "../../components/Steps.astro";
+import { annotator } from "../../lib/markup";
+
+const rules = (await getEntry("rules", "rules"))!.data.items;
+const after = (await getEntry("rituals", "after-session"))!.data;
+const storage = (await getEntry("storage", "storage"))!.data;
+const gloss = await annotator();
+---
+
+<Base title="Daily care" description="The rules, the routine after every session, and storage.">
+  <h1>Daily care</h1>
+  <p class="lede full-only">
+    A zisha pot needs very little: hot water, air, and the same tea every time.
+  </p>
+
+  <h2 id="rules">The rules</h2>
+  <Rules items={rules} />
+
+  <h2 id="after">{after.title} <span class="hz" set:html={gloss.text(after.hanzi)} /></h2>
+  <p class="meta full-only">{after.summary}</p>
+  <Steps steps={after.steps} />
+
+  <h2 id="storage">Storing</h2>
+  <h3>The pot</h3>
+  <Rules items={storage.pot} numbered={false} />
+  <h3>The tea</h3>
+  <Rules items={storage.tea} numbered={false} />
+</Base>

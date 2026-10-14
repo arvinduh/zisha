@@ -1,0 +1,175 @@
+---
+/**
+ * The steep timer: a pill beside the menu dot that fills with honey as the
+ * tea steeps, chimes when it's time to pour, and steps to the next infusion.
+ *
+ * The current infusion is kept for six hours, so a reload or a locked phone
+ * doesn't lose your place. Any `[data-restart]` button on the page resets it.
+ */
+import type { Schedule } from "../lib/infusion";
+
+type Props = { tea: string; schedule: Schedule };
+const { tea, schedule } = Astro.props;
+---
+
+<div
+  class="timer"
+  data-timer
+  data-tea={tea}
+  data-schedule={JSON.stringify(schedule)}
+  data-state="idle"
+>
+  <div class="timer-n">
+    <button type="button" data-shift="-1" aria-label="Previous infusion">‹</button>
+    <div class="timer-label">
+      <b data-n>1</b>
+      <small>steep</small>
+    </div>
+    <button type="button" data-shift="1" aria-label="Next infusion">›</button>
+  </div>
+  <div class="timer-time" role="status">
+    <b data-count>7s</b>
+    <small data-status>aim 5-8s</small>
+  </div>
+  <button class="timer-go" type="button" data-go aria-label="Start steep">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path class="i-play" d="M8 5.5v13l10.5-6.5z"></path>
+      <rect class="i-stop" x="7" y="7" width="10" height="10" rx="1.5"></rect>
+    </svg>
+  </button>
+</div>
+
+<script>
+  import { load, save } from "../lib/store";
+  import { steepWindow, target, type Schedule } from "../lib/infusion";
+  import { chime, countdown, primeAudio } from "../lib/timing";
+
+  type State = "idle" | "running" | "done";
+  type Session = { n: number; at: number };
+
+  const SESSION_TTL = 6 * 60 * 60 * 1000;
+  const MAX_INFUSION = 40;
+  /** How long "Pour" stays up before the next infusion is shown. */
+  const DONE_HOLD = 10_000;
+  /** The screen stays awake this long after the last steep. */
+  const AWAKE_HOLD = 5 * 60_000;
+
+  /** Keeps the screen on through a session, released after a quiet spell. */
+  const wake = (() => {
+    let lock: WakeLockSentinel | null = null;
+    let releaseId = 0;
+    return {
+      async hold(): Promise<void> {
+        window.clearTimeout(releaseId);
+        if (lock || !("wakeLock" in navigator)) return;
+        try {
+          lock = await navigator.wakeLock.request("screen");
+          lock.addEventListener("release", () => (lock = null));
+        } catch {
+          // Denied (battery saver, hidden tab): the timer still works.
+        }
+      },
+      release(afterMs: number): void {
+        window.clearTimeout(releaseId);
+        releaseId = window.setTimeout(() => void lock?.release(), afterMs);
+      },
+    };
+  })();
+
+  function mount(el: HTMLElement): void {
+    const schedule = JSON.parse(el.dataset.schedule!) as Schedule;
+    const key = `session:${el.dataset.tea}`;
+    const nEl = el.querySelector<HTMLElement>("[data-n]")!;
+    const countEl = el.querySelector<HTMLElement>("[data-count]")!;
+    const statusEl = el.querySelector<HTMLElement>("[data-status]")!;
+    const go = el.querySelector<HTMLButtonElement>("[data-go]")!;
+    const [prev, next] = el.querySelectorAll<HTMLButtonElement>("[data-shift]");
+
+    const saved = load<Session>(key);
+    let n = saved && Date.now() - saved.at < SESSION_TTL ? saved.n : 1;
+    let cancel: (() => void) | null = null;
+    let doneId = 0;
+
+    function show(state: State, shownN = n): void {
+      el.dataset.state = state;
+      nEl.textContent = String(shownN);
+      prev!.disabled = state === "running" || n <= 1;
+      next!.disabled = state === "running" || n >= MAX_INFUSION;
+      if (state === "idle") {
+        const [lo, hi] = steepWindow(schedule, n);
+        countEl.textContent = `${target([lo, hi])}s`;
+        statusEl.textContent = `aim ${lo}-${hi}s`;
+        go.setAttribute("aria-label", `Start steep ${n}`);
+      } else if (state === "running") {
+        statusEl.textContent = "steeping";
+        go.setAttribute("aria-label", "Stop");
+      } else {
+        countEl.textContent = "Pour";
+        statusEl.textContent = "every drop";
+        go.setAttribute("aria-label", `Start steep ${n}`);
+      }
+    }
+
+    function setN(value: number): void {
+      n = Math.min(MAX_INFUSION, Math.max(1, value));
+      save(key, { n, at: Date.now() } satisfies Session);
+    }
+
+    function start(): void {
+      window.clearTimeout(doneId);
+      primeAudio();
+      void wake.hold();
+      const total = target(steepWindow(schedule, n));
+      el.style.setProperty("--steep", `${total}s`);
+      show("running");
+      cancel = countdown(
+        total,
+        (left) => (countEl.textContent = `${left}s`),
+        finish,
+      );
+    }
+
+    function finish(): void {
+      cancel = null;
+      chime();
+      wake.release(AWAKE_HOLD);
+      const finished = n;
+      setN(n + 1);
+      show("done", finished);
+      doneId = window.setTimeout(() => show("idle"), DONE_HOLD);
+    }
+
+    function stop(): void {
+      cancel?.();
+      cancel = null;
+      window.clearTimeout(doneId);
+      wake.release(AWAKE_HOLD);
+      show("idle");
+    }
+
+    go.addEventListener("click", () => (cancel ? stop() : start()));
+
+    for (const btn of [prev!, next!]) {
+      btn.addEventListener("click", () => {
+        window.clearTimeout(doneId);
+        setN(n + Number(btn.dataset.shift));
+        show("idle");
+      });
+    }
+
+    for (const btn of document.querySelectorAll<HTMLButtonElement>(
+      "[data-restart]",
+    )) {
+      btn.addEventListener("click", () => {
+        stop();
+        setN(1);
+        show("idle");
+      });
+    }
+
+    show("idle");
+  }
+
+  const el = document.querySelector<HTMLElement>("[data-timer]");
+  if (el) mount(el);
+</script>

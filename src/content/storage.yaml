@@ -1,0 +1,30 @@
+# Keeping the pot and the tea between sessions. The bold line is all Mini
+# shows; Full adds the reason.
+
+pot:
+  - rule: Bone-dry before it goes back in its case.
+    why: >-
+      Give it a full day or two in the open first. Clay holds water deep
+      inside, and a damp pot in a closed case is how mold starts.
+  - rule: Store it with the lid off or ajar.
+    why: Air keeps moving through the pot, so any last moisture can escape.
+  - rule: Somewhere dry, shaded, and away from the stove.
+    why: >-
+      Humidity breeds mold, kitchen air carries grease, and a sunny or
+      cold window means temperature swings. Air the case out now and then.
+  - rule: Use it often.
+    why: >-
+      A pot in regular use stays fresh and keeps building patina. After a long
+      rest, rinse it, warm it, and brew a throwaway cup first.
+
+tea:
+  - rule: Sealed, opaque, cool, and dry.
+    why: >-
+      A tin or a resealable foil bag in a cupboard. Air, light, heat, and damp
+      all fade the flavor.
+  - rule: Far from strong smells.
+    why: Tea soaks up odors. Keep it away from spices, coffee, and cleaning products.
+  - rule: At its brightest within a year or two.
+    why: >-
+      Kept dry, it won't spoil; it slowly changes instead, growing darker and
+      more honeyed.

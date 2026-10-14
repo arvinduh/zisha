@@ -1,0 +1,122 @@
+# Troubleshooting, by what you'd actually notice. urgency:
+#   stop - stop brewing in it until it's handled
+#   soon - fix at the next session
+#   fine - normal; nothing is wrong
+
+items:
+  - id: mold
+    symptom: Fuzzy spots, or it smells musty or moldy
+    urgency: stop
+    steps:
+      - Don't brew in it. Wipe away any visible spots with hot water and a soft cloth.
+      - Pour just-boiled (100 °C) water through it and over it, several times.
+      - Dry it in direct sun for about 2 hours with the lid off, then let it finish drying indoors.
+      - Smell it. If the mustiness is still there, do the [deep reset](/care/fix/#soap), then [wake it up again](/care/wake-up/).
+    why: >-
+      Clay holds moisture deep in its pores, so a pot put away damp can grow
+      mold. Prevention is simple: always dry it with the lid off.
+
+  - id: soap
+    symptom: I used soap, or it went through the dishwasher
+    urgency: stop
+    steps:
+      - Rinse it many times with hot water.
+      - "Deep reset: simmer pot and lid in clean water at 90-95 °C (not a rolling boil) for 45 minutes. For heavy contamination, add 5 g of baking soda per liter."
+      - Repeat the simmer twice more in fresh water to clear what's left.
+      - Air-dry with the lid off for 3 full days (72 hours).
+      - "[Wake it up again](/care/wake-up/), then brew a throwaway cup and taste. Still soapy? Repeat the reset."
+      - After a dishwasher run, also [check for cracks](/care/fix/#crack).
+    why: >-
+      Detergent soaks into unglazed clay and only leaves slowly. The reset pulls
+      it out with plain hot water instead of more chemicals.
+
+  - id: wrong-tea
+    symptom: I brewed a different tea in it
+    urgency: soon
+    steps:
+      - Once isn't a disaster. Rinse it several times with just-boiled water.
+      - Brew one throwaway infusion of the pot's own tea and pour it out.
+      - If the other tea's taste still lingers after a few sessions, do the [deep reset](/care/fix/#soap) and [wake the pot up again](/care/wake-up/).
+    why: >-
+      Heavy, roasted, or fermented teas (like ripe pu-erh) leave the strongest
+      traces, and they're hardest to undo in a pot meant for light teas.
+
+  - id: crack
+    symptom: Dropped it, or think it's cracked
+    urgency: stop
+    steps:
+      - "Tap test: lid off, pot empty, tap the shoulder gently with a fingernail. A clear ring is good. A dull, flat clunk suggests a hidden crack."
+      - "Leak test: fill with room-temperature water, cover the spout with a finger, put the lid on, and blow gently into the lid's air hole. Watch the base of the handle, the spout joint, and the lower walls for beads of water."
+      - If it fails either test, or you can see a crack, stop using it. Hot water makes cracks grow.
+      - A good repairer can fix it with traditional staples or kintsugi (gold-seam repair), and it can still be beautiful.
+    why: >-
+      Most cracks come from sudden temperature changes or knocks. Warming the pot
+      in stages and keeping a fingernail on the lid when you pour prevent nearly
+      all of them.
+
+  - id: stains
+    symptom: Dark or blotchy stains on the outside
+    urgency: soon
+    steps:
+      - Empty the pot right after every session. Tea pooled at the bottom is the usual cause.
+      - Don't rub the pot with spent leaves. It stains unevenly.
+      - Rinse with just-boiled water and let it air-dry open, every time.
+      - For a stubborn mark, rub gently with a paste of baking soda and water, then rinse very well.
+    why: >-
+      Light clays (duanni) show this the most; zhuni is dense and resists it.
+      Steady hot rinses even the color out over time.
+
+  - id: chalky
+    symptom: White spots or a chalky film
+    urgency: soon
+    steps:
+      - That's mineral from hard water drying on the clay.
+      - Use filtered or soft water for brewing and rinsing. This is the real fix.
+      - Shake off the last drops before you leave it to dry, so less water evaporates on the surface.
+      - For buildup, use the same gentle baking-soda paste as for stains, then rinse well.
+
+  - id: sticky
+    symptom: Sticky, greasy, or cloudy shine
+    urgency: soon
+    steps:
+      - That's oil, not patina. It comes from hands, lotion, or kitchen air.
+      - Handle the pot with clean, dry hands, and keep it away from the stove.
+      - Keep up the hot rinse and open-air drying. The cloudiness fades as real patina takes over.
+
+  - id: drip
+    symptom: The spout dribbles when I pour
+    urgency: fine
+    steps:
+      - End each pour with a quick, decisive tilt back to upright. Don't slow down at the end.
+      - A little drip is normal for a handmade pot. Keep a cloth handy for the table.
+
+  - id: wobble
+    symptom: The lid wobbles or isn't airtight
+    urgency: fine
+    steps:
+      - That's normal. A slight wobble is part of a hand-fitted lid.
+      - Don't try the "flip test" (turning a full pot upside down to see if the lid holds). It breaks a lot of lids.
+
+  - id: clay-smell
+    symptom: The new pot smells of clay or earth
+    urgency: fine
+    steps:
+      - Normal for a new pot. It's from the kiln.
+      - "[Wake it up](/care/wake-up/) if you haven't yet. The smell fades over the first sessions."
+      - A strong fishy or moldy smell is different. See [fuzzy spots or mustiness](/care/fix/#mold).
+
+  - id: taste
+    symptom: The tea tastes thin, bitter, or flat
+    urgency: fine
+    steps:
+      - Thin? Steep a few seconds longer, or use half a gram more leaf.
+      - Bitter or "cooked"? Use water nearer 90 °C, pour down the wall rather than onto the leaves, and drain every drop between rounds.
+      - Flat? Warm everything properly first, and check the tea is stored sealed and away from smells.
+
+  - id: unused
+    symptom: It hasn't been used in a while
+    urgency: fine
+    steps:
+      - Smell it first. If it's musty, see [fuzzy spots or mustiness](/care/fix/#mold).
+      - "[Warm it in two stages](/tea/bai-mudan/#before), then rinse it with hot water."
+      - Brew a throwaway infusion of its tea, and then brew as usual.

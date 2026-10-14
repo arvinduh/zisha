@@ -1,0 +1,132 @@
+---
+/**
+ * About this site: who it's for, and the design language laid open (palette
+ * and type), every value copyable.
+ */
+import Base from "../layouts/Base.astro";
+import { annotator } from "../lib/markup";
+import { palette } from "../lib/palette";
+
+/** Who the gift is for, and who signs it. */
+const FOR = "Cecil";
+const FROM = "arvin";
+
+const gloss = await annotator();
+const faces = [
+  {
+    glyph: "Aa",
+    cjk: false,
+    name: "Crimson Pro",
+    role: "Everything in Latin",
+    open: "https://fonts.google.com/specimen/Crimson+Pro",
+    css: `font-family: "Crimson Pro", Georgia, serif;`,
+  },
+  {
+    glyph: "紫",
+    cjk: true,
+    name: "Song 宋体",
+    role: "Chinese, from the system",
+    css: `font-family: "Songti SC", "STSong", "Noto Serif CJK SC", serif;`,
+  },
+];
+const scale = [
+  { role: "Title", spec: "54 / 400", cls: "t-title", sample: "A teapot to grow old with." },
+  { role: "Section", spec: "30 / 400", cls: "t-section", sample: "Before" },
+  { role: "Body", spec: "20 / 1.6", cls: "", sample: "Pour the water down the inside wall." },
+  { role: "Meta", spec: "17 italic", cls: "t-meta", sample: "Recipe from the seller's card." },
+];
+---
+
+<Base title="About this site" description="Who this guide is for, and its palette and type.">
+  <h1>About this site</h1>
+  <p class="lede">
+    This site is a gift for a dear partner. May it accompany their zhuni teapot
+    and become a ritual that grows and lasts with them for a lifetime.
+  </p>
+  <p class="lede">
+    <i>Happy Birthday {FOR}</i>
+  </p>
+  <p class="sign">- {FROM}</p>
+
+  <h2>Colour</h2>
+  <p>
+    Paper, clay, and tea. Two neutrals carry the page, espresso marks the only
+    things you can press, and each accent has one job. Tap a value to copy it.
+  </p>
+  <ul class="swatches">
+    {
+      palette.map((s) => (
+        <li>
+          <span class="chip" style={`background:${s.hex}`} />
+          <span>{s.name}</span>
+          <button class="action" type="button" data-copy={s.hex}>
+            {s.hex}
+          </button>
+          <p class="meta">{s.role}</p>
+        </li>
+      ))
+    }
+  </ul>
+
+  <h2>Type</h2>
+  <p>
+    One family does everything, so hierarchy comes from size, weight, and space
+    alone. Crimson Pro is an old-style book face with true italics, served from
+    this site rather than a font service.
+  </p>
+  <ul class="faces">
+    {
+      faces.map((f) => (
+        <li>
+          <span class:list={["face", { cjk: f.cjk }]} aria-hidden="true">
+            {f.glyph}
+          </span>
+          <span set:html={gloss.text(f.name)} />
+          <p class="meta">{f.role}</p>
+          <span class="face-links">
+            {f.open && (
+              <a href={f.open} target="_blank" rel="noopener">
+                Open
+              </a>
+            )}
+            <button class="action" type="button" data-copy={f.css}>
+              Copy CSS
+            </button>
+          </span>
+        </li>
+      ))
+    }
+  </ul>
+  <dl class="scale">
+    {
+      scale.map((t) => (
+        <div>
+          <dt>
+            {t.role}, {t.spec}
+          </dt>
+          <dd class={t.cls}>{t.sample}</dd>
+        </div>
+      ))
+    }
+  </dl>
+
+</Base>
+
+<script>
+  for (const btn of document.querySelectorAll<HTMLButtonElement>(
+    "[data-copy]",
+  )) {
+    const label = btn.textContent;
+    let resetId = 0;
+    btn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(btn.dataset.copy!);
+        btn.textContent = "Copied";
+      } catch {
+        btn.textContent = "Couldn't copy";
+      }
+      window.clearTimeout(resetId);
+      resetId = window.setTimeout(() => (btn.textContent = label), 1400);
+    });
+  }
+</script>

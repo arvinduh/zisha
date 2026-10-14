@@ -1,0 +1,65 @@
+---
+/**
+ * Start: the first read-through. Meet the set and the clay, then a day-one
+ * path of links to where each instruction lives.
+ */
+import { getCollection, getEntry } from "astro:content";
+import Base from "../layouts/Base.astro";
+import Read from "../components/Read.astro";
+import Teapot from "../components/Teapot.astro";
+import { annotator } from "../lib/markup";
+import { href } from "../lib/url";
+
+const pieces = (await getEntry("set", "set"))!.data.items;
+const inBox = pieces.filter((p) => p.inBox);
+const extras = pieces.filter((p) => !p.inBox);
+const tea = (await getCollection("teas"))[0]!;
+const gloss = await annotator();
+const lower = (s: string): string => s.charAt(0).toLowerCase() + s.slice(1);
+
+const dayOne = [
+  { path: "care/daily/#rules", title: "Read the rules", text: "Six short ones that keep the pot safe." },
+  { path: "care/wake-up/", title: "Wake up the pot", text: "Once, before its first brew: 40 minutes, then a few hours of cooling." },
+  { path: `tea/${tea.id}/`, title: `Brew the ${tea.data.name}`, text: "Step by step, with a steep timer." },
+  { path: "care/daily/#after", title: "Clean up", text: "Five minutes: rinse, then air-dry with the lid off." },
+];
+---
+
+<Base description="A care and brewing guide for a zhuni teapot and Bai Mudan tea.">
+  <Teapot />
+  <h1>A teapot to grow old with.</h1>
+  <p class="lede">
+    Your zhuni teapot, its tea set, and the {tea.data.name} that came with them.
+    Read this page once; everything after is a tap away in the menu.
+  </p>
+
+  <h2>Day one</h2>
+  <ol class="path">
+    {
+      dayOne.map((d) => (
+        <li>
+          <a href={href(d.path)}>{d.title}</a>
+          <span>{d.text}</span>
+        </li>
+      ))
+    }
+  </ol>
+
+  <h2>Your set</h2>
+  <p class="mini-only">{inBox.map((p) => p.name).join(" · ")}</p>
+  <ul class="pieces full-only">
+    {
+      inBox.map((p) => (
+        <li>
+          <strong>{p.name}</strong> <span class="hz" set:html={gloss.text(p.hanzi)} />
+          <Fragment set:html={` ${gloss.text([p.what, p.use, p.care].filter(Boolean).join(" "))}`} />
+        </li>
+      ))
+    }
+  </ul>
+  <p class="meta full-only">
+    Worth having too: {extras.map((p) => lower(p.name).replace(/^an? /, "")).join(", ")}.
+  </p>
+
+  <Read id="zisha" fullOnly />
+</Base>

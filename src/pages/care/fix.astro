@@ -1,0 +1,56 @@
+---
+/**
+ * Something wrong? Fixes keyed by what you'd actually notice. A link to a
+ * fix's anchor opens it.
+ */
+import { getEntry } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import { annotator } from "../../lib/markup";
+
+const fixes = (await getEntry("fixes", "fixes"))!.data.items;
+const gloss = await annotator();
+const urgency = {
+  stop: "Stop using it until this is fixed",
+  soon: "Fix it at the next session",
+  fine: "Normal, nothing is wrong",
+} as const;
+---
+
+<Base title="Something wrong?" description="Troubleshooting a zisha teapot by symptom.">
+  <h1>Something wrong?</h1>
+  <p class="lede">Find what you're seeing. Most of it is easy to put right.</p>
+
+  <ul class="fixes">
+    {
+      fixes.map((fix) => (
+        <li id={fix.id}>
+          <details>
+            <summary>
+              <span class="fix-symptom">
+                {fix.symptom}
+                <span class={`urgency ${fix.urgency}`}>{urgency[fix.urgency]}</span>
+              </span>
+            </summary>
+            <ol>
+              {fix.steps.map((s) => (
+                <li set:html={gloss.text(s)} />
+              ))}
+            </ol>
+            {fix.why && <p class="meta" set:html={gloss.text(fix.why)} />}
+          </details>
+        </li>
+      ))
+    }
+  </ul>
+</Base>
+
+<script>
+  /** Opens the fix a link points at, on arrival and on in-page jumps. */
+  function openTarget(): void {
+    const id = location.hash.slice(1);
+    if (!id) return;
+    document.getElementById(id)?.querySelector("details")?.setAttribute("open", "");
+  }
+  openTarget();
+  addEventListener("hashchange", openTarget);
+</script>

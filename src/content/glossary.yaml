@@ -1,0 +1,96 @@
+# Every Chinese term on the site, plus the English or pinyin words that point
+# to one. Chinese text gets a tap/hover definition wherever it appears; a word
+# in `words` gets one on its first appearance in each section. The build warns
+# about any Chinese text missing from this list.
+
+items:
+  - hanzi: 紫砂
+    pinyin: zǐshā
+    meaning: '"Purple sand": the clay from Yixing these teapots are made of.'
+    words: [zisha]
+  - hanzi: 紫砂壶
+    pinyin: zǐshā hú
+    meaning: A teapot made of zisha clay.
+  - hanzi: 朱泥壶
+    pinyin: zhūní hú
+    meaning: A teapot made of zhuni, Yixing's dense red clay.
+  - hanzi: 宜兴
+    pinyin: Yíxīng
+    meaning: The city in Jiangsu where zisha is mined and potted.
+    words: [Yixing]
+  - hanzi: 开壶
+    pinyin: kāi hú
+    meaning: '"Opening the pot": seasoning a new pot before its first brew.'
+  - hanzi: 养壶
+    pinyin: yǎng hú
+    meaning: '"Raising the pot": the years of use that grow its patina.'
+  - hanzi: 收壶
+    pinyin: shōu hú
+    meaning: '"Putting the pot away": the cleanup after a session.'
+  - hanzi: 温壶
+    pinyin: wēn hú
+    meaning: '"Warming the pot" before hot water goes in.'
+  - hanzi: 包浆
+    pinyin: bāojiāng
+    meaning: The soft, satin patina a pot grows from years of tea and hot water.
+    words: [patina]
+  - hanzi: 温润
+    pinyin: wēnrùn
+    meaning: Warm and moist-looking, the quality of a good patina.
+  - hanzi: 功夫茶
+    pinyin: gōngfū chá
+    meaning: Brewing with lots of leaf, little water, and many short steeps.
+    words: [gongfu]
+  - hanzi: 盖碗
+    pinyin: gàiwǎn
+    meaning: A lidded porcelain bowl on a saucer, for brewing.
+    words: [gaiwan]
+  - hanzi: 公道杯
+    pinyin: gōngdào bēi
+    meaning: '"Fairness cup": the pitcher that evens out each infusion.'
+    words: [fairness pitcher]
+  - hanzi: 品茗杯
+    pinyin: pǐnmíng bēi
+    meaning: A small cup for tasting tea.
+  - hanzi: 茶巾
+    pinyin: chájīn
+    meaning: A cotton cloth kept only for teaware.
+  - hanzi: 水盂
+    pinyin: shuǐyú
+    meaning: A bowl for warm-up and rinse water.
+  - hanzi: 随手泡
+    pinyin: suíshǒu pào
+    meaning: A kettle kept at the tea table.
+  - hanzi: 茶秤
+    pinyin: chá chèng
+    meaning: A small scale for weighing leaves.
+  - hanzi: 白牡丹
+    pinyin: bái mǔdān
+    meaning: '"White peony": a white tea of a bud and one or two leaves.'
+    words: [Bai Mudan]
+  - hanzi: 紫泥
+    pinyin: zǐní
+    meaning: Purple clay, the classic all-rounder.
+    words: [zini]
+  - hanzi: 朱泥
+    pinyin: zhūní
+    meaning: Red clay, dense and aromatic, and the most sensitive to sudden heat.
+    words: [zhuni]
+  - hanzi: 段泥
+    pinyin: duànní
+    meaning: Beige clay, porous, suited to light teas.
+    words: [duanni]
+  - hanzi: 绿泥
+    pinyin: lǜní
+    meaning: Green clay, rare, for delicate teas.
+    words: [lüni]
+  - hanzi: 底槽清
+    pinyin: dǐcáoqīng
+    meaning: A prized purple clay from the deepest seam.
+    words: [dicaoqing]
+  - hanzi: 一年茶，三年药，七年宝
+    pinyin: yì nián chá, sān nián yào, qī nián bǎo
+    meaning: '"One year tea, three years medicine, seven years treasure": a saying about aging white tea.'
+  - hanzi: 宋体
+    pinyin: sòngtǐ
+    meaning: The Song typeface, the classic serif style of Chinese print.
